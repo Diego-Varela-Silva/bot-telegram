@@ -14,8 +14,11 @@ from telethon.sessions import StringSession
 
 async def main() -> None:
     client = TelegramClient(StringSession(), int(os.environ["API_ID"]), os.environ["API_HASH"])
-    await client.start()  # pede telefone, codigo e (se tiver) a senha de 2 etapas
+    # Pede so o telefone (nunca token de bot), depois o codigo e, se tiver, a senha de 2 etapas
+    await client.start(phone=lambda: input("Seu telefone com DDI (ex.: +5511999999999): "))
     try:
+        if await client.is_bot():
+            raise SystemExit("Isso e uma sessao de bot. Use o seu numero de telefone.")
         with open("tg_session.txt", "w") as f:
             f.write(client.session.save())
     finally:

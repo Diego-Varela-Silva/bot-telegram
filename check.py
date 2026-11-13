@@ -64,6 +64,9 @@ async def run() -> int:
     if not await client.is_user_authorized():
         log.error("TG_SESSION invalida ou expirada: gere de novo com gerar_sessao.py")
         return 1
+    if await client.is_bot():
+        log.error("TG_SESSION e de um bot; gere de novo com gerar_sessao.py usando seu telefone")
+        return 1
 
     found = {}
     async with client:
