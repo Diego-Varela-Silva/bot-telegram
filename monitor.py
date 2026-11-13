@@ -46,7 +46,7 @@ def send_bot_message(token: str, chat_id: str, text: str) -> None:
             raise RuntimeError("Bot API retornou ok=false")
 
 
-def main() -> None:
+async def main() -> None:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     os.umask(0o077)  # arquivo .session so legivel por voce
     load_dotenv()
@@ -87,10 +87,10 @@ def main() -> None:
         except Exception:
             log.exception("Falha ao enviar alerta")
 
-    client.start()  # na primeira vez pede telefone + codigo no terminal
+    await client.start()  # na primeira vez pede telefone + codigo no terminal
     log.info("Monitorando: %s", pattern.pattern)
-    client.run_until_disconnected()
+    await client.run_until_disconnected()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

@@ -5,7 +5,20 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 [ -f .env ] || { echo "Crie o .env primeiro (cp .env.example .env)"; exit 1; }
-set -a; source .env; set +a
+
+# Le uma chave do .env sem executar o arquivo (valores podem ter espacos/aspas)
+env_get() {
+  grep -E "^[[:space:]]*$1[[:space:]]*=" .env | tail -1 | cut -d= -f2- \
+    | sed -E "s/^[[:space:]]+//; s/[[:space:]]+\$//; s/^[\"'](.*)[\"']\$/\1/"
+}
+API_ID=$(env_get API_ID)
+API_HASH=$(env_get API_HASH)
+BOT_TOKEN=$(env_get BOT_TOKEN)
+NOTIFY_CHAT_ID=$(env_get NOTIFY_CHAT_ID)
+KEYWORDS=$(env_get KEYWORDS)
+for v in API_ID API_HASH BOT_TOKEN NOTIFY_CHAT_ID; do
+  [ -n "${!v}" ] || { echo "Falta $v no .env"; exit 1; }
+done
 
 if [ ! -f tg_session.txt ]; then
   .venv/bin/python gerar_sessao.py
